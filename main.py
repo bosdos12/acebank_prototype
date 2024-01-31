@@ -28,14 +28,36 @@ def add_history(card_number, message, value, action):
     accounts = read_accounts()
 
     for account in accounts:
-        account["history"].append({
-            "message": message,
-            "value": value,
-            "action": action
-        })
+        if account["card_number"] == card_number:
+            account["history"].append({
+                "message": message,
+                "value": value,
+                "action": action
+            })
+            break
 
     write_accounts(accounts)
 
+# Authenticates user by making sure there is a user with the card number given
+# and making sure the card number and the cvv are matching.
+def user_exists(card_number):
+    print("USER EXISTS FUNCTION")
+    accounts = read_accounts()
+    user_exists = False
+    for account in accounts:
+        print(account)
+        print(account["card_number"])
+        if account["card_number"] == card_number:
+            print("USER EXISTS")
+            user_exists = True
+            break
+        
+    print(card_number)
+    print(user_exists)
+    return user_exists
+
+def authenticate_user():
+    pass
 
 # ============================================================================
 # ADMIN functions
@@ -127,32 +149,31 @@ def withdraw(card_number, amount):
 def transaction(payer_card_number, beneficiary_card_number, amount):
     accounts = read_accounts()
 
-    payer_found = False
-    beneficiary_found = False
+    payer_found = user_exists(payer_card_number)
+    beneficiary_found = user_exists(beneficiary_card_number)
 
     action_success = False
     funds_exist = False
     action_message = ""
 
     # Verifying both the accounts exist
-    for account in accounts:
-        if (account["card_number"] == payer_card_number):
-            payer_found = True
-            if (account["balance"] >= amount):
-                account["balance"] -= amount
-                funds_exist = True
 
+    print(f"Payer Found: {payer_found}")
+    print(f"Beneficiary Found: {beneficiary_found}")
 
-        if (account["card_number"] == beneficiary_card_number):
-            beneficiary_found = True
-            if funds_exist:
-                account["balance"] += amount
-                action_success = True
         
-        if payer_found and beneficiary_found:
-            break
             
     if payer_found and beneficiary_found:
+        for account in accounts:
+            if (account["card_number"] == payer_card_number):
+                if (account["balance"] >= amount):
+                    account["balance"] -= amount
+                    funds_exist = True
+            if (account["card_number"] == beneficiary_card_number):
+                if funds_exist:
+                    account["balance"] += amount
+                    action_success = True
+
         if action_success:
             action_message = f"Successfully transferred {amount} from payer({payer_card_number}) to beneficiary({beneficiary_card_number})"
         else:
@@ -207,9 +228,9 @@ if __name__ == "__main__":
                 print("Error withdrawing from user. Make sure amount and card number has been entered.")
         elif (sys.argv[1] == "transaction"):
             try:
-                payer_card_number = int(input("Payer Card Number: "))
-                beneficiary_card_number = int(input("Beneficiary Card Number: "))
+                payer_card_number = input("Payer Card Number: ")
+                beneficiary_card_number = input("Beneficiary Card Number: ")
                 amount = int(input("Amount of money to transfer: "))
                 print(transaction(payer_card_number, beneficiary_card_number, amount))
             except:
-                print("Please enter asdafdsvalid values.")
+                print("Please enter valid values.")
