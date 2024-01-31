@@ -175,6 +175,7 @@ def transaction(payer_card_number, beneficiary_card_number, amount):
                     action_success = True
 
         if action_success:
+            write_accounts(accounts)
             action_message = f"Successfully transferred {amount} from payer({payer_card_number}) to beneficiary({beneficiary_card_number})"
         else:
             action_message = f"Transaction failed due to the payer not having enough funds."
