@@ -212,4 +212,4 @@ if __name__ == "__main__":
                 amount = int(input("Amount of money to transfer: "))
                 print(transaction(payer_card_number, beneficiary_card_number, amount))
             except:
-                print("Please enter valid values.")
+                print("Please enter asdafdsvalid values.")
