@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dashboard</title>
+</head>
+<style>
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #f2f2f2;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+</style>
+<body>
+    <a href="transfer.html">Transfer Money</a>
+    <br><br>
+    <h1>Balance: <span id="balance_indicator" style="color: green; font-weight: bold;"></span></h1>
+    <br>
+    <h2>Transaction History</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Message</th>
+                <th>Value</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="transactions">
+
+        </tbody>
+    </table>
+
+</body>
+
+
+<script>
+
+        cardnumber = localStorage.getItem("cardnumber");
+        cvv = localStorage.getItem("cvv");
+
+        fetch("http://127.0.0.1:5000/account_data", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                cardnumber: cardnumber,
+                cvv: cvv
+            }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Response:', data);
+                console.log(data.history[0])
+
+                if (data.action_success) {
+                    document.getElementById("balance_indicator").innerHTML = data.balance;
+
+                    data.history.forEach(single_history => {
+                        console.log(single_history)
+                        document.getElementById("transactions").innerHTML += `
+                            <tr>
+                                <td>${single_history.message}</td>
+                                <td>${single_history.value}</td>
+                                <td style="color: ${single_history.action == 'in' ? 'green' : 'red'};">${single_history.action}</td>
+                            </tr>
+                        ` 
+                    });
+                } else {
+                    alert(data.action_message);
+                    window.location.href("/");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("Network connectivity issues.")
+            });
+            
+</script>
+</html>

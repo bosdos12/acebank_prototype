@@ -1,11 +1,11 @@
-from flask import Flask
+from flask import Flask, request, jsonify
 import json
 import sys
 import datetime
-
+from flask_cors import CORS
 
 app = Flask(__name__)
-
+CORS(app)
 
 # ============================================================================
 # UTIL's
@@ -19,8 +19,10 @@ def read_accounts():
 
 def write_accounts(value):
     with open("accounts.json", "w") as _write_accounts:
-        json.dump(value, _write_accounts)
+        json.dump(value, _write_accounts, indent=4)
     _write_accounts.close()
+
+
 
 # Message: Custom message explaining action; Value: Amount of money processed; Action: in, out.
 # NOTE: its an internal system call, no need to validate if account exists.
@@ -56,8 +58,26 @@ def user_exists(card_number):
     print(user_exists)
     return user_exists
 
-def authenticate_user():
-    pass
+def authenticate_user(card_number, cvv):
+    print("USER EXISTS FUNCTION")
+    accounts = read_accounts()
+    user_exists = False
+    valid_cvv = False
+    for account in accounts:
+        print(account)
+        print(account["card_number"])
+        if account["card_number"] == card_number:
+            print("USER EXISTS")
+            user_exists = True
+
+            if (account["cvv"] == cvv):
+                valid_cvv = True
+
+            break
+        
+    print(card_number)
+    print(user_exists)
+    return [user_exists, valid_cvv]
 
 # ============================================================================
 # ADMIN functions
@@ -146,7 +166,7 @@ def withdraw(card_number, amount):
         print(f"Failed to withdraw. Card number {card_number} doesn't exist")
     
 # transaction
-def transaction(payer_card_number, beneficiary_card_number, amount):
+def transaction(payer_card_number, payer_cvv, beneficiary_card_number, amount):
     accounts = read_accounts()
 
     payer_found = user_exists(payer_card_number)
@@ -154,6 +174,7 @@ def transaction(payer_card_number, beneficiary_card_number, amount):
 
     action_success = False
     funds_exist = False
+    valid_payer_cvv = False
     action_message = ""
 
     # Verifying both the accounts exist
@@ -166,19 +187,29 @@ def transaction(payer_card_number, beneficiary_card_number, amount):
     if payer_found and beneficiary_found:
         for account in accounts:
             if (account["card_number"] == payer_card_number):
-                if (account["balance"] >= amount):
-                    account["balance"] -= amount
-                    funds_exist = True
+                if (account["cvv"] == payer_cvv):
+                    valid_payer_cvv = True
+                    if (account["balance"] >= amount):
+                        account["balance"] -= amount
+                        funds_exist = True
+
+
             if (account["card_number"] == beneficiary_card_number):
-                if funds_exist:
-                    account["balance"] += amount
-                    action_success = True
+                if valid_payer_cvv:
+                    if funds_exist:
+                        account["balance"] += amount
+                        action_success = True
+                    else:
+                        action_message = f"Transaction failed due to the payer not having enough funds."
+                else:
+                    action_message = f"Transaction failed due to payers CVV not being correct or entered."
 
         if action_success:
             write_accounts(accounts)
             action_message = f"Successfully transferred {amount} from payer({payer_card_number}) to beneficiary({beneficiary_card_number})"
-        else:
-            action_message = f"Transaction failed due to the payer not having enough funds."
+            add_history(beneficiary_card_number, action_message, value=amount, action="in")
+            add_history(payer_card_number, action_message, value=amount, action="out")
+
 
     else:
         if not(payer_found) and not(beneficiary_found):
@@ -198,9 +229,70 @@ def transaction(payer_card_number, beneficiary_card_number, amount):
 # APIS
 
 # Transaction
-# @Flask.post("/api/transaction")
-# def post_transaction():
-#     return ""
+@app.post('/post_transaction')
+def post_transaction():
+    # Get JSON data from the request body
+    data = request.get_json()
+    print(data)
+    # Check if 'username' and 'password' are present in the JSON data
+    if 'payer_card_number' not in data or 'payer_cvv' not in data or "beneficiary_card_number" not in data or "amount" not in data:
+        return jsonify({'action_message': 'Missing payer_card_number or payer_cvv or beneficiary_card_number or amount', "action_success": False}), 400
+
+    # Extract username and password from the JSON data
+    payer_card_number = data["payer_card_number"]
+    payer_cvv = data["payer_cvv"]
+    beneficiary_card_number = data["beneficiary_card_number"]
+    amount = data["amount"]
+
+    transaction_output = transaction(payer_card_number, payer_cvv, beneficiary_card_number, amount)
+    return jsonify(transaction_output) # action_message: string, action_success: boolean
+
+
+@app.post("/post_login")
+def post_login():
+    data = request.get_json()
+    print(data)
+
+    auth_user_res = authenticate_user(data["cardnumber"], data["cvv"])
+
+    print(auth_user_res)
+
+    if (auth_user_res[0] and auth_user_res[1]):
+        return jsonify({"action_success": True})
+    elif (not(auth_user_res[0]) and not(auth_user_res[1])):
+        return jsonify({"action_success": False, "action_message": "User doesnt exist."})
+    elif (auth_user_res[0] and not(auth_user_res[1])):
+        return jsonify({"action_success": False, "action_message": "User exists, invalid cvv."})
+
+
+# Account Data
+@app.post("/account_data")
+def account_data():
+    data = request.get_json()    
+
+    auth_user_res = authenticate_user(data["cardnumber"], data["cvv"])
+
+    print(auth_user_res)
+
+    if (auth_user_res[0] and auth_user_res[1]):
+        accounts = read_accounts()
+
+        current_account = False
+
+        for account in accounts:
+            if account["card_number"] == data["cardnumber"]:
+                current_account = account
+                break
+
+
+        return jsonify({"action_success": True, "balance": account["balance"], "history": account["history"]})
+
+    
+    elif (not(auth_user_res[0]) and not(auth_user_res[1])):
+        return jsonify({"action_success": False, "action_message": "User doesnt exist."})
+    elif (auth_user_res[0] and not(auth_user_res[1])):
+        return jsonify({"action_success": False, "action_message": "User exists, invalid cvv."})
+
 
 # E-commerce
 
@@ -230,8 +322,9 @@ if __name__ == "__main__":
         elif (sys.argv[1] == "transaction"):
             try:
                 payer_card_number = input("Payer Card Number: ")
+                payer_cvv = input("Payer CVV: ")
                 beneficiary_card_number = input("Beneficiary Card Number: ")
                 amount = int(input("Amount of money to transfer: "))
-                print(transaction(payer_card_number, beneficiary_card_number, amount))
+                print(transaction(payer_card_number, payer_cvv, beneficiary_card_number, amount))
             except:
                 print("Please enter valid values.")

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AceBank Login</title>
+</head>
+<body>
+    <input type="text" id="cardnumber" placeholder="Card Number">
+    <input type="text" id="cvv" placeholder="CVV">
+    <button onclick="loginF()">Login</button>
+
+</body>
+<script>
+    const loginF = () => {
+        cardnumber = document.getElementById("cardnumber").value;
+        cvv = document.getElementById("cvv").value;
+
+
+        fetch("http://127.0.0.1:5000/post_login", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                cardnumber: cardnumber,
+                cvv: cvv
+            }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Response:', data);
+
+                if (data.action_success) {
+                    localStorage.setItem("cardnumber", cardnumber);
+                    localStorage.setItem("cvv", cvv);
+                    window.location.href = "/dashboard.html";
+                    
+                } else {
+                    alert(data.action_message)
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("Network connectivity issues.")
+            });
+            }
+</script>
+</html>
