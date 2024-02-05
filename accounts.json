@@ -3,26 +3,41 @@
         "username": "AdakCelina",
         "cvv": "235",
         "card_number": "0610299572",
-        "balance": 3,
+        "balance": 2,
         "history": [
             {
                 "message": "Deposit to bank",
-                "value": 5,
+                "value": 18,
                 "action": "in"
             },
             {
-                "message": "Withdrawal from bank",
-                "value": 2,
+                "message": "Successfully transferred 5 from payer(0610299572) to beneficiary(0077234724)",
+                "value": 5,
                 "action": "out"
             },
             {
-                "message": "Successfully transferred 2 from payer(0610299572) to beneficiary(0076257236)",
-                "value": 2,
+                "message": "Successfully transferred 4 from payer(0610299572) to beneficiary(0077234724)",
+                "value": 4,
                 "action": "out"
             },
             {
                 "message": "Successfully transferred 1 from payer(0610299572) to beneficiary(0077234724)",
                 "value": 1,
+                "action": "out"
+            },
+            {
+                "message": "Withdrawal from bank",
+                "value": 8,
+                "action": "out"
+            },
+            {
+                "message": "Deposit to bank",
+                "value": 10,
+                "action": "in"
+            },
+            {
+                "message": "Withdrawal from bank",
+                "value": 10,
                 "action": "out"
             },
             {
@@ -36,27 +51,34 @@
                 "action": "out"
             },
             {
-                "message": "Successfully transferred 2 from payer(0610299572) to beneficiary(0076257236)",
+                "message": "Successfully transferred 2 from payer(0610299572) to beneficiary(0077234724)",
                 "value": 2,
                 "action": "out"
-            }
-        ]
-    },
-    {
-        "username": "AdolfHitler",
-        "cvv": "938",
-        "card_number": "0076257236",
-        "balance": 4,
-        "history": [
+            },
             {
-                "message": "Successfully transferred 2 from payer(0610299572) to beneficiary(0076257236)",
-                "value": 2,
+                "message": "Withdrawal from bank",
+                "value": 0,
+                "action": "out"
+            },
+            {
+                "message": "Withdrawal from bank",
+                "value": 3,
+                "action": "out"
+            },
+            {
+                "message": "Deposit to bank",
+                "value": 10,
                 "action": "in"
             },
             {
-                "message": "Successfully transferred 2 from payer(0610299572) to beneficiary(0076257236)",
-                "value": 2,
-                "action": "in"
+                "message": "Successfully transferred 5 from payer(0610299572) to beneficiary(0076257236)",
+                "value": 5,
+                "action": "out"
+            },
+            {
+                "message": "Successfully transferred 3 from payer(0610299572) to beneficiary(0077234724)",
+                "value": 3,
+                "action": "out"
             }
         ]
     },
@@ -64,18 +86,104 @@
         "username": "JohnDoe",
         "cvv": "777",
         "card_number": "0077234724",
-        "balance": 6,
+        "balance": 10,
         "history": [
+            {
+                "message": "Successfully transferred 5 from payer(0610299572) to beneficiary(0077234724)",
+                "value": 5,
+                "action": "in"
+            },
+            {
+                "message": "Successfully transferred 4 from payer(0610299572) to beneficiary(0077234724)",
+                "value": 4,
+                "action": "in"
+            },
             {
                 "message": "Successfully transferred 1 from payer(0610299572) to beneficiary(0077234724)",
                 "value": 1,
                 "action": "in"
             },
             {
+                "message": "Withdrawal from bank",
+                "value": 10,
+                "action": "out"
+            },
+            {
                 "message": "Successfully transferred 5 from payer(0610299572) to beneficiary(0077234724)",
+                "value": 5,
+                "action": "in"
+            },
+            {
+                "message": "Successfully transferred 2 from payer(0610299572) to beneficiary(0077234724)",
+                "value": 2,
+                "action": "in"
+            },
+            {
+                "message": "Successfully transferred 3 from payer(0610299572) to beneficiary(0077234724)",
+                "value": 3,
+                "action": "in"
+            }
+        ]
+    },
+    {
+        "username": "EfeV",
+        "cvv": "311",
+        "card_number": "0076918388",
+        "balance": 10,
+        "history": [
+            {
+                "message": "Deposit to bank",
+                "value": 10,
+                "action": "in"
+            }
+        ]
+    },
+    {
+        "username": "AdolfHitler",
+        "cvv": "938",
+        "card_number": "0076257236",
+        "balance": 5,
+        "history": [
+            {
+                "message": "Successfully transferred 5 from payer(0610299572) to beneficiary(0076257236)",
                 "value": 5,
                 "action": "in"
             }
         ]
+    },
+    {
+        "username": "AdakCelina",
+        "cvv": "235",
+        "card_number": "0610299572",
+        "balance": 0,
+        "history": []
+    },
+    {
+        "username": "AdakCelina",
+        "cvv": "235",
+        "card_number": "0610299123",
+        "balance": 0,
+        "history": []
+    },
+    {
+        "username": "dfgfdgna",
+        "cvv": "235",
+        "card_number": "0610299sdfsdf",
+        "balance": 0,
+        "history": []
+    },
+    {
+        "username": "dfgfdgna",
+        "cvv": "235",
+        "card_number": "0610299234",
+        "balance": 0,
+        "history": []
+    },
+    {
+        "username": "Adak",
+        "cvv": "231",
+        "card_number": "234234234",
+        "balance": 0,
+        "history": []
     }
 ]

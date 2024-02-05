@@ -7,6 +7,23 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
+
+import time
+
+def timing_decorator(func):
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+
+        elapsed_time = end_time - start_time
+        print(f"Elapsed time: {elapsed_time} seconds")
+
+        return result
+
+    return wrapper
+
+
 # ============================================================================
 # UTIL's
 
@@ -82,38 +99,39 @@ def authenticate_user(card_number, cvv):
 # ============================================================================
 # ADMIN functions
 
-# create user
+# Function taking user input and creating a bank account with given properties
+@timing_decorator
 def create_user(sysargv):
 
+    # Get all accounts in array format
     accounts = read_accounts()
 
+    # Validate if user input has been given, if not, 
+    # exit function with an error message indicating input needs to be given.
     try:
-
-        account_exists = False
-        for account in accounts:
-            if account["card_number"] == sysargv[4]:
-                account_exists = True
-                break
-
-        if account_exists:
-            print("The card number is already used by another account. Please use another card number.")
-        else:
-            newAccount = dict(
-                username = sysargv[2].replace(" ", ""),
-                cvv = sysargv[3],
-                card_number = sysargv[4],
-                balance = 0,
-                history = []
-            )
-
-            accounts = read_accounts()
-            accounts.append(newAccount)
-            write_accounts(accounts)
-
-            print(f"User {newAccount['username']} created successfully.")
-
+        user_input_card = sysargv[4]
     except:
         print("Please enter a name, cvv and card number.")
+        return
+
+    # Loop through all accounts, and create a new account 
+    # if there is no account already using the card number receiced in the input.
+    if not any(account['card_number'] == user_input_card for account in accounts):
+        newAccount = dict(
+            username = sysargv[2].replace(" ", ""),
+            cvv = sysargv[3],
+            card_number = sysargv[4],
+            balance = 0,
+            history = []
+        )
+
+        accounts.append(newAccount)
+        write_accounts(accounts)
+
+        print(f"User {newAccount['username']} created successfully.")
+        return
+        
+    print("The card number is already used by another account. Please use another card number.")
 
 
 # ============================================================================
